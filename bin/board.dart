@@ -1,3 +1,7 @@
+// textwrap, text wrapping and filling library, by https://github.com/ykmnkmi
+// used in accordance with the MIT license
+// https://pub.dev/packages/textwrap
+// https://github.com/ykmnkmi/textwrap.dart
 import 'package:textwrap/textwrap.dart';
 
 import 'cell.dart';

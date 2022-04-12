@@ -6,7 +6,7 @@ import 'cell.dart';
 import 'constants.dart';
 import 'util.dart';
 
-class Client {
+class ServerClient {
   String id;
   late String name;
   GameState state = GameState.waiting;
@@ -14,7 +14,7 @@ class Client {
   Player owner;
   WebSocket socket;
 
-  Client(this.socket, this.owner, [String? name])
+  ServerClient(this.socket, this.owner, [String? name])
       : id = socket.hashCode.toString(),
         board = Board(owner) {
     this.name = name == null || name.trim() == "" ? "Player $id" : name;
@@ -25,7 +25,7 @@ class Client {
 
   @override
   bool operator ==(other) {
-    return other is Client && socket.hashCode == other.socket.hashCode;
+    return other is ServerClient && socket.hashCode == other.socket.hashCode;
   }
 }
 
@@ -39,7 +39,6 @@ enum GameState {
 
 class GameManager {
   static GameManager? _instance;
-
   static GameManager get instance => _instance ??= GameManager();
 
   Map<String, Game> games = {};
@@ -53,41 +52,29 @@ class GameManager {
     do {
       id = generateId();
     } while (games.containsKey(id));
-    var game = Game(id);
-    games[id] = game;
-    return game;
+
+    return games[id] = Game(id);
   }
 
-  Game? remove(String id) {
-    return games.remove(id);
-  }
-
-  GameState state(String id) {
-    var game = games[id];
-    if (game == null) return GameState.none;
-    return game.state;
-  }
+  Game? remove(String id) => games.remove(id);
+  GameState state(String id) => games[id]?.state ?? GameState.none;
 }
 
 class Game {
   String id;
   GameState state = GameState.waiting;
-  Client? host;
-  Client? guest;
+  ServerClient? host;
+  ServerClient? guest;
   Player turn = Player.host;
 
   Game(this.id);
 
-  // ignore: unnecessary_null_comparison
   bool get isFull => host != null && guest != null;
 
   @override
   int get hashCode => id.hashCode;
-
   @override
-  bool operator ==(other) {
-    return other is Game && other.id == id;
-  }
+  bool operator ==(other) => other is Game && other.id == id;
 
   Future<void> prepare() async {
     assert(this.host != null, "host not initialized");
@@ -148,13 +135,14 @@ class Game {
     }));
   }
 
-  Client? addPlayer(WebSocket socket, [String? name]) {
-    if (host == null) return host = Client(socket, Player.host, name);
-    if (guest == null) return guest = Client(socket, Player.guest, name);
+  ServerClient? addPlayer(WebSocket socket, [String? name]) {
+    if (host == null) return host = ServerClient(socket, Player.host, name);
+    if (guest == null) return guest = ServerClient(socket, Player.guest, name);
     return null;
   }
 
-  Future<void> onGuess(Client client, Client other, int row, int col) async {
+  Future<void> onGuess(
+      ServerClient client, ServerClient other, int row, int col) async {
     var cell = other.board.cells.yx(row, col);
     if (cell.state == CellState.hit || cell.state == CellState.miss) {
       throw StateError("Cell is already hit or missed");
@@ -237,7 +225,8 @@ class Game {
     }
   }
 
-  Future<void> onMessage(Client client, Map<String, dynamic> message) async {
+  Future<void> onMessage(
+      ServerClient client, Map<String, dynamic> message) async {
     ClientMessageType type;
     try {
       type = ClientMessageType.values[message["type"]];

@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
+// official dart http library, by the Dart project authors
+// https://pub.dev/packages/http
+// https://github.com/dart-lang/http
 import "package:http/http.dart" as http;
 
 import '../board.dart';

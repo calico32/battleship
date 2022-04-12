@@ -1,1 +1,3 @@
-A simple command-line application.
+# battleship
+
+Real-time online multiplayer battleship game.

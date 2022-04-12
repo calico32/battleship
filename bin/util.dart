@@ -1,8 +1,11 @@
 import 'dart:io';
 import 'dart:math';
 
+// tint, ANSI coloring helpers, by https://github.com/frencojobs
+// used in accordance with the MIT license
+// https://pub.dev/packages/tint
+// https://github.com/frencojobs/tint
 import 'package:tint/src/helpers.dart';
-import 'package:tint/tint.dart';
 
 import 'constants.dart';
 
@@ -127,10 +130,13 @@ extension TintCommon on String {
   String style(Style style) =>
       format(style.index + 1, max(22, style.index + 20))(this);
 
-  String strip() => Tint(this).strip();
+  // snippet below taken from tint source
+  // https://github.com/frencojobs/tint/blob/main/lib/tint.dart
+
+  String strip() => replaceAll(ansiPattern, '');
   String reset() => format(0, 0)(this);
 
-  // Foreground Colors
+  // foreground colors
   String black() => format(30, 39)(this);
   String red() => format(31, 39)(this);
   String green() => format(32, 39)(this);
@@ -147,7 +153,8 @@ extension TintCommon on String {
   String brightMagenta() => format(95, 39)(this);
   String brightCyan() => format(96, 39)(this);
   String brightWhite() => format(97, 39)(this);
-  // Background Colors
+
+  // background colors
   String onBlack() => format(40, 49)(this);
   String onRed() => format(41, 49)(this);
   String onGreen() => format(42, 49)(this);
@@ -164,7 +171,8 @@ extension TintCommon on String {
   String onBrightMagenta() => format(105, 49)(this);
   String onBrightCyan() => format(106, 49)(this);
   String onBrightWhite() => format(107, 49)(this);
-  // Attributes
+
+  // attributes
   String bold() => format(1, 22)(this);
   String dim() => format(2, 22)(this);
   String italic() => format(3, 23)(this);
@@ -173,9 +181,12 @@ extension TintCommon on String {
   String inverse() => format(7, 27)(this);
   String hidden() => format(8, 28)(this);
   String strikethrough() => format(9, 29)(this);
-  // Aliases
+
+  // aliases
   String gray() => brightBlack();
   String grey() => brightBlack();
   String onGray() => onBrightBlack();
   String onGrey() => onBrightBlack();
+
+  // end of snippet from tint source
 }

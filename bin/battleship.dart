@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'client.dart';
 import 'server.dart';
-import 'test.dart' as debug;
 import 'util.dart';
 
 void main(List<String> arguments) async {
@@ -48,9 +47,6 @@ void main(List<String> arguments) async {
         } else {
           await client("localhost", 8080);
         }
-        break;
-      case "debug":
-        debug.main();
         break;
       default:
         print("Unknown mode: ${arguments[0]}");

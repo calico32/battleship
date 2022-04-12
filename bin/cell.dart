@@ -1,8 +1,7 @@
 import 'dart:collection';
 
-import 'package:tint/tint.dart';
-
 import 'constants.dart';
+import 'util.dart';
 
 enum CellState {
   none,
@@ -111,26 +110,12 @@ class Cells with IterableMixin<List<Cell>> {
 
   Cells.from(this.cells);
 
-  /// Returns the cell at the given coordinates.
-  /// An out-of-bounds point will return a cell with the state [CellState.none].
   Cell at(Point pos) => pos.outOfBounds ? Cell(pos) : cells[pos.y][pos.x];
-
-  /// Returns the cell at the given coordinates.
-  /// An out-of-bounds point will return a cell with the state [CellState.none].
   Cell yx(int y, int x) =>
       Point(x, y).outOfBounds ? Cell.xy(x, y) : cells[y][x];
-
-  /// Returns the cell at the given coordinates.
-  /// An out-of-bounds point will return a cell with the state [CellState.none].
   Cell xy(int x, int y) =>
       Point(x, y).outOfBounds ? Cell.xy(x, y) : cells[y][x];
-
-  /// Returns the row of cells at the given y coordinate.
-  /// An out-of-bounds y coordinate will return an empty list.
   List<Cell> y(int y) => Point(0, y).outOfBounds ? [] : cells[y];
-
-  /// Returns the column of cells at the given x coordinate.
-  /// An out-of-bounds x coordinate will return an empty list.
   List<Cell> x(int x) => Point(x, 0).outOfBounds
       ? []
       : [for (var y = 0; y < boardSize; y++) cells[y][x]];
