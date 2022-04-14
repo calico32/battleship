@@ -1,4 +1,4 @@
-// textwrap, text wrapping and filling library, by https://github.com/ykmnkmi
+// textwrap, text wrapping and filling library, by the Python authors & Olzhas Suleimen (Dart port) (https://github.com/ykmnkmi)
 // used in accordance with the MIT license
 // https://pub.dev/packages/textwrap
 // https://github.com/ykmnkmi/textwrap.dart
@@ -169,11 +169,13 @@ class Board {
 
     var selectedShipCells = selctedShip?.points ?? [];
 
-    var result = "┏${"━━━━━" * boardSize}┓\n";
+    var result = DisplayMode.isUnicode
+        ? "┏${"━━━━━" * boardSize}┓\n"
+        : "+${"-----" * boardSize}+\n";
 
     for (var row in cells) {
-      var topRow = "┃";
-      var bottomRow = "┃";
+      var topRow = DisplayMode.isUnicode ? "┃" : "|";
+      var bottomRow = DisplayMode.isUnicode ? "┃" : "|";
       for (var cell in row) {
         var currentOwner = owners[cell.pos];
         var orientation = orientations[cell.pos] ?? cell.orientationIn(cells);
@@ -184,60 +186,66 @@ class Board {
 
         var lt = " ", lb = " ", rt = " ", rb = " ";
 
+        var selector = DisplayMode.isUnicode ? "🭽🭼🭾🭿" : "┌└┐┘";
+
         if (cell.pos == selected) {
           var selColor = grayOutSelected ? Colors.gray : null;
-          lt = "🭽".fg(selColor);
-          lb = "🭼".fg(selColor);
-          rt = "🭾".fg(selColor);
-          rb = "🭿".fg(selColor);
+          lt = selector[0].fg(selColor);
+          lb = selector[1].fg(selColor);
+          rt = selector[2].fg(selColor);
+          rb = selector[3].fg(selColor);
         } else if (orientation == Orientation.horizontal &&
             cell.state == CellState.ship) {
           var left = cells.at(cell.pos + Point.left);
           if (left.state == CellState.ship &&
               owners[left.pos] == currentOwner) {
-            lt = "▃".fg(color);
-            lb = "🮃".fg(color);
+            var chars = CellState.ship.large();
+            lt = chars[0].strip()[0].fg(color);
+            lb = chars[1].strip()[0].fg(color);
           }
           var right = cells.at(cell.pos + Point.right);
           if (right.state == CellState.ship &&
               owners[right.pos] == currentOwner) {
-            rt = "▃".fg(color);
-            rb = "🮃".fg(color);
+            var chars = CellState.ship.large();
+            rt = chars[0].strip()[0].fg(color);
+            rb = chars[1].strip()[0].fg(color);
           }
         }
 
         if (selectedShipCells.isNotEmpty) {
           if (orientation == Orientation.horizontal) {
             if (cell.pos == selectedShipCells.first) {
-              lt = "🭽".fg(color);
-              lb = "🭼".fg(color);
+              lt = selector[0].fg(color);
+              lb = selector[1].fg(color);
             } else if (cell.pos == selectedShipCells.last) {
-              rt = "🭾".fg(color);
-              rb = "🭿".fg(color);
+              rt = selector[2].fg(color);
+              rb = selector[3].fg(color);
             }
           } else {
             if (cell.pos == selectedShipCells.first) {
-              lt = "🭽".fg(color);
-              rt = "🭾".fg(color);
+              lt = selector[0].fg(color);
+              rt = selector[2].fg(color);
             } else if (cell.pos == selectedShipCells.last) {
-              lb = "🭼".fg(color);
-              rb = "🭿".fg(color);
+              lb = selector[1].fg(color);
+              rb = selector[3].fg(color);
             }
           }
         }
 
         var parts = cell.format(orientation);
-        var top = parts[0].fg(color);
-        var bottom = parts[1].fg(color);
+        var top = color != null ? parts[0].strip().fg(color) : parts[0];
+        var bottom = color != null ? parts[1].strip().fg(color) : parts[1];
         topRow += "$lt$top$rt";
         bottomRow += "$lb$bottom$rb";
       }
 
-      result += topRow + "┃\n";
-      result += bottomRow + "┃\n";
+      result += topRow + (DisplayMode.isUnicode ? "┃\n" : "|\n");
+      result += bottomRow + (DisplayMode.isUnicode ? "┃\n" : "|\n");
     }
 
-    result += "┗${"━━━━━" * boardSize}┛\n";
+    result += DisplayMode.isUnicode
+        ? "┗${"━━━━━" * boardSize}┛\n"
+        : "+${"-----" * boardSize}+\n";
 
     return result;
   }
@@ -245,18 +253,22 @@ class Board {
   String formatSmall() {
     var orientations = _getCellOrientations();
 
-    var result = "┌─${"──" * boardSize}┐\n";
+    var result = DisplayMode.isUnicode
+        ? "┌─${"──" * boardSize}┐\n"
+        : "+-${"--" * boardSize}+\n";
 
     for (var row in cells) {
-      result += "│ ";
+      result += DisplayMode.isUnicode ? "│ " : "| ";
       for (var cell in row) {
         var orientation = orientations[cell.pos] ?? cell.orientationIn(cells);
         result += cell.formatSmall(orientation);
       }
-      result += "│\n";
+      result += DisplayMode.isUnicode ? "│\n" : "|\n";
     }
 
-    result += "└─${"──" * boardSize}┘\n";
+    result += DisplayMode.isUnicode
+        ? "└─${"──" * boardSize}┘\n"
+        : "+-${"--" * boardSize}+\n";
 
     return result;
   }

@@ -31,10 +31,7 @@ enum UIState {
   gameOver,
 }
 
-enum ClientMessageType {
-  ready,
-  guess,
-}
+enum ClientMessageType { ready, guess }
 
 enum ServerMessageType {
   init,
@@ -46,20 +43,28 @@ enum ServerMessageType {
   gameFinished,
 }
 
-enum Player {
-  host,
-  guest,
-}
+enum Player { host, guest }
 
 enum Orientation {
   horizontal,
-  vertical,
-}
+  vertical;
 
-extension OrientationRotated on Orientation {
   Orientation get rotated => this == Orientation.horizontal
       ? Orientation.vertical
       : Orientation.horizontal;
+}
+
+enum DisplayMode {
+  unicode,
+  ascii;
+
+  static DisplayMode _current = DisplayMode.unicode;
+  static void set(DisplayMode mode) {
+    _current = mode;
+  }
+
+  static DisplayMode get current => _current;
+  static bool get isUnicode => _current == DisplayMode.unicode;
 }
 
 class Point {

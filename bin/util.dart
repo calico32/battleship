@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
-// tint, ANSI coloring helpers, by https://github.com/frencojobs
+// tint, ANSI coloring helpers, by Frenco Jobs (https://github.com/frencojobs)
 // used in accordance with the MIT license
 // https://pub.dev/packages/tint
 // https://github.com/frencojobs/tint
@@ -129,6 +129,8 @@ extension TintCommon on String {
 
   String style(Style style) =>
       format(style.index + 1, max(22, style.index + 20))(this);
+
+  String styles(List<Style> styles) => styles.fold(this, (a, b) => style(b));
 
   // snippet below taken from tint source
   // https://github.com/frencojobs/tint/blob/main/lib/tint.dart

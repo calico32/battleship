@@ -1,20 +1,34 @@
 import 'dart:io';
 
 import 'client.dart';
+import 'constants.dart';
 import 'server.dart';
 import 'util.dart';
 
 void main(List<String> arguments) async {
   if (arguments.isEmpty) {
     print("Battleship v1.0.0");
-    print("Usage: ${Platform.executable} <mode> [<target>]");
+    print("Usage: ${Platform.executable} [options] <mode> <target>");
+    print("  options:");
+    print("    --ascii                      Use ASCII instead of Unicode");
     print("  mode: server");
-    print("    target: hostname:port (default: localhost:8080)");
+    print("    target: hostname:port        (default: localhost:8080)");
     print("  mode: client");
     print("    target: server_hostname:port (default: localhost:8080)");
-    print("  mode: debug");
     print("");
     exit(1);
+  }
+
+  arguments = arguments.toList();
+
+  while (arguments[0].startsWith("--")) {
+    if (arguments[0] == "--ascii") {
+      DisplayMode.set(DisplayMode.ascii);
+    } else {
+      print("Unknown option: ${arguments[0]}");
+      exit(1);
+    }
+    arguments.removeAt(0);
   }
   try {
     switch (arguments[0]) {

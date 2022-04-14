@@ -3,11 +3,112 @@ import 'dart:collection';
 import 'constants.dart';
 import 'util.dart';
 
+// ignore_for_file: unused_element
+
 enum CellState {
-  none,
-  ship,
-  hit,
-  miss,
+  none(
+    ulh: [" ．", "   "],
+    ush: "‧ ",
+    alh: [" . ", "   "],
+    ash: ". ",
+    styles: [Style.dim],
+  ),
+  ship(
+    ulh: ["▃▃▃", "🮃🮃🮃"],
+    ulv: ["🮈█▍", "🮈█▍"],
+    ush: "🬋🬋",
+    usv: "▊ ",
+    alh: ["===", "==="],
+    alv: ["|||", "|||"],
+    ash: "==",
+    asv: "||",
+  ),
+  hit(
+    ulh: [" 🮦 ", " 🮧 "],
+    ush: "Ｘ",
+    alh: ["\\/ ", "/\\ "],
+    ash: "X ",
+    fg: Colors.red,
+  ),
+  miss(
+    ulh: [" 🭯 ", " 🭭 "],
+    ush: "◆ ",
+    alh: [" v ", " ^ "],
+    ash: "O ",
+    fg: Colors.gray,
+  );
+
+  final List<String> ulh;
+  final List<String>? ulv;
+  final List<String> alh;
+  final List<String>? alv;
+  final String ush;
+  final String? usv;
+  final String ash;
+  final String? asv;
+  final Colors? fg;
+  final Colors? bg;
+  final List<Style>? styles;
+
+  List<String> large({
+    DisplayMode? displayMode,
+    Orientation? orientation,
+  }) {
+    displayMode ??= DisplayMode.current;
+    orientation ??= Orientation.horizontal;
+
+    var map = {
+      DisplayMode.unicode: {
+        Orientation.horizontal: ulh,
+        Orientation.vertical: ulv ?? ulh,
+      },
+      DisplayMode.ascii: {
+        Orientation.horizontal: alh,
+        Orientation.vertical: alv ?? alh,
+      },
+    };
+
+    var lines = map[displayMode]![orientation]!;
+    return lines.map((e) => e.fg(fg).bg(bg).styles(styles ?? [])).toList();
+  }
+
+  String small({
+    DisplayMode? displayMode,
+    Orientation? orientation,
+  }) {
+    displayMode ??= DisplayMode.current;
+    orientation ??= Orientation.horizontal;
+
+    var map = {
+      DisplayMode.unicode: {
+        Orientation.horizontal: ush,
+        Orientation.vertical: usv ?? ush,
+      },
+      DisplayMode.ascii: {
+        Orientation.horizontal: ash,
+        Orientation.vertical: asv ?? ash,
+      },
+    };
+
+    return map[displayMode]![orientation]!.fg(fg).bg(bg).styles(styles ?? []);
+  }
+
+  const CellState({
+    // unicode
+    required this.ulh,
+    this.ulv,
+    required this.ush,
+    this.usv,
+    // ascii
+    required this.alh,
+    this.alv,
+    required this.ash,
+    this.asv,
+    // style
+    this.fg,
+    this.bg,
+    this.styles,
+  });
 }
 
 class Cell {
@@ -71,31 +172,11 @@ class Cell {
   }
 
   List<String> format(Orientation orientation) {
-    switch (state) {
-      case CellState.none:
-        return [" ．".dim(), "   ".dim()];
-      case CellState.ship:
-        return orientation == Orientation.horizontal
-            ? ["▃▃▃", "🮃🮃🮃"]
-            : ["🮈█▍", "🮈█▍"];
-      case CellState.hit:
-        return [" 🮦 ".red(), " 🮧 ".red()];
-      case CellState.miss:
-        return [" 🭯 ".gray(), " 🭭 ".gray()];
-    }
+    return state.large(orientation: orientation);
   }
 
   String formatSmall(Orientation orientation) {
-    switch (state) {
-      case CellState.none:
-        return "‧ ".dim();
-      case CellState.ship:
-        return orientation == Orientation.horizontal ? "🬋🬋" : "▊ ";
-      case CellState.hit:
-        return "Ｘ".red();
-      case CellState.miss:
-        return "◆ ".gray();
-    }
+    return state.small(orientation: orientation);
   }
 }
 
