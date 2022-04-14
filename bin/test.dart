@@ -3,7 +3,13 @@ import 'cell.dart';
 import 'constants.dart';
 import 'ship.dart';
 
-void main() {
+void main(List<String> arguments) {
+  if (arguments.isNotEmpty) {
+    if (arguments[0] == "-a" || arguments[0] == "--ascii") {
+      DisplayMode.set(DisplayMode.ascii);
+    }
+  }
+
   var board = Board(Player.guest);
 
   board.addShip(Ship.xy(0, 0, 5, Orientation.vertical));

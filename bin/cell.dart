@@ -18,8 +18,8 @@ enum CellState {
     ulv: ["🮈█▍", "🮈█▍"],
     ush: "🬋🬋",
     usv: "▊ ",
-    alh: ["===", "==="],
-    alv: ["|||", "|||"],
+    alh: ["___", "‾‾‾"],
+    alv: ["|| ", "|| "],
     ash: "==",
     asv: "||",
   ),
@@ -53,6 +53,7 @@ enum CellState {
   List<String> large({
     DisplayMode? displayMode,
     Orientation? orientation,
+    bool plain = false,
   }) {
     displayMode ??= DisplayMode.current;
     orientation ??= Orientation.horizontal;
@@ -69,12 +70,14 @@ enum CellState {
     };
 
     var lines = map[displayMode]![orientation]!;
+    if (plain) return lines;
     return lines.map((e) => e.fg(fg).bg(bg).styles(styles ?? [])).toList();
   }
 
   String small({
     DisplayMode? displayMode,
     Orientation? orientation,
+    bool plain = false,
   }) {
     displayMode ??= DisplayMode.current;
     orientation ??= Orientation.horizontal;
@@ -90,7 +93,9 @@ enum CellState {
       },
     };
 
-    return map[displayMode]![orientation]!.fg(fg).bg(bg).styles(styles ?? []);
+    var char = map[displayMode]![orientation]!;
+    if (plain) return char;
+    return char.fg(fg).bg(bg).styles(styles ?? []);
   }
 
   const CellState({

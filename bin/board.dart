@@ -199,16 +199,20 @@ class Board {
           var left = cells.at(cell.pos + Point.left);
           if (left.state == CellState.ship &&
               owners[left.pos] == currentOwner) {
-            var chars = CellState.ship.large();
-            lt = chars[0].strip()[0].fg(color);
-            lb = chars[1].strip()[0].fg(color);
+            var chars = CellState.ship
+                .large(plain: true)
+                .map((e) => String.fromCharCode(e.runes.first).fg(color));
+            lt = chars.first;
+            lb = chars.last;
           }
           var right = cells.at(cell.pos + Point.right);
           if (right.state == CellState.ship &&
               owners[right.pos] == currentOwner) {
-            var chars = CellState.ship.large();
-            rt = chars[0].strip()[0].fg(color);
-            rb = chars[1].strip()[0].fg(color);
+            var chars = CellState.ship
+                .large(plain: true)
+                .map((e) => String.fromCharCode(e.runes.first).fg(color));
+            rt = chars.first;
+            rb = chars.last;
           }
         }
 
@@ -283,17 +287,23 @@ class Board {
     var bottom =
         bottomLabel ?? (largeIsOpponent ? "Your board" : "Opponent's board");
 
-    var largeWidth = boardSize * 5 + 2;
+    var largeWidth = boardSize * 5;
     var smallWidth = boardSize * 2 + 2;
 
     var left = (largeWidth - top.length) ~/ 2;
     var right = largeWidth - top.length - left;
 
-    var numbers =
-        fullwidthNumbers.substring(0, boardSize).split("").join("   ");
+    var modeLetters = DisplayMode.isUnicode
+        ? fullwidthAlphabet.split("")
+        : alphabet.split("").map((e) => "$e ").toList();
+
+    var modeNumbers = (DisplayMode.isUnicode
+            ? fullwidthNumbers.split("")
+            : numbers.split("").map((e) => "$e ").toList())
+        .sublist(0, boardSize);
 
     var header = "   ${" " * left}$top${" " * right}\n"
-        "     $numbers\n";
+        "     ${modeNumbers.join("   ")}\n";
 
     var lines = combined.split("\n");
     var width = lines[0].length;
@@ -304,14 +314,14 @@ class Board {
       var side = "  ";
 
       if (i >= 1 && i < 21 && i % 2 == 1) {
-        side = fullwidthAlphabet[(i - 1) ~/ 2];
+        side = modeLetters[(i - 1) ~/ 2];
       }
 
       if (i >= 22 && i < 32) {
         side = " " + line.substring(0, 2);
         line = line.substring(2, width - 3) +
             " " +
-            fullwidthAlphabet[i - 22] +
+            modeLetters[i - 22] +
             line.substring(width - 1);
       }
 
@@ -322,7 +332,7 @@ class Board {
     right = smallWidth - bottom.length - left;
 
     formatted[19] += "${" " * left}$bottom${" " * right}";
-    formatted[20] += " ${fullwidthNumbers.substring(0, boardSize)}";
+    formatted[20] += " ${modeNumbers.join("")}";
 
     return header + formatted.join("\n");
   }
@@ -347,7 +357,9 @@ class Board {
     var smallLines = small.formatSmall().substring(1).split("\n");
     var smallStr = smallLines.join("\n" + " " * (largeLineLength - 1));
 
-    var combined = largeStr.substring(0, largeStr.length - 2) + "╃" + smallStr;
+    var joiner = DisplayMode.isUnicode ? "╃" : "+";
+    var combined =
+        largeStr.substring(0, largeStr.length - 2) + joiner + smallStr;
 
     if (status == null || status == "") {
       return _addLabels(
