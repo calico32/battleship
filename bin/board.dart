@@ -186,7 +186,10 @@ class Board {
 
         var lt = " ", lb = " ", rt = " ", rb = " ";
 
-        var selector = DisplayMode.isUnicode ? "🭽🭼🭾🭿" : "┌└┐┘";
+        var selector = (DisplayMode.isUnicode ? "🭽🭼🭾🭿" : "┌└┐┘")
+            .runes
+            .map((e) => String.fromCharCode(e))
+            .toList();
 
         if (cell.pos == selected) {
           var selColor = grayOutSelected ? Colors.gray : null;
