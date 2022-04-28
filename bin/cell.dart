@@ -157,23 +157,29 @@ class Cell {
     int horizontal = 0;
     int vertical = 0;
 
-    for (int dx = -2; dx <= 2; dx++) {
-      if (dx == 0) continue;
-      var point = pos + Point(dx, 0);
+    const deltas = [-2, -1, 1, 2];
+
+    // x
+    for (int i = 0; i < deltas.length; i++) {
+      var delta = deltas[i];
+      var point = pos + Point(delta, 0);
       if (point.outOfBounds) continue;
       if (cells.at(point).isShip) horizontal++;
     }
 
-    for (int dy = -2; dy <= 2; dy++) {
-      if (dy == 0) continue;
-      var point = pos + Point(0, dy);
+    // y
+    for (int i = 0; i < deltas.length; i++) {
+      var delta = deltas[i];
+      var point = pos + Point(0, delta);
       if (point.outOfBounds) continue;
-      if (cells.at(point).isShip) horizontal++;
+      if (cells.at(point).isShip) vertical++;
     }
 
-    return horizontal >= vertical
-        ? Orientation.horizontal
-        : Orientation.vertical;
+    if (horizontal >= vertical) {
+      return Orientation.horizontal;
+    } else {
+      return Orientation.vertical;
+    }
   }
 
   List<String> format(Orientation orientation) {

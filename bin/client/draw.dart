@@ -10,7 +10,7 @@ mixin ClientUI on ClientState {
   String currentLogo = battleshipLogo;
   int logoFrame = 19;
   bool shouldAnimate = true;
-
+  String status = "";
   int lastTermSize = 0;
 
   Future<void> animateLogo() async {
@@ -32,8 +32,6 @@ mixin ClientUI on ClientState {
     currentLogo = battleshipLogo;
     logoFrame = 19;
   }
-
-  String status = "";
 
   @override
   Future<void> update() async => draw();
