@@ -117,10 +117,6 @@ class Board {
     return result;
   }
 
-  bool isOccupied(Point point) {
-    return cells.at(point).state != CellState.none;
-  }
-
   Set<Point> getOverlaps() {
     var occupied = <Point>{};
     var overlaps = <Point>{};
@@ -136,13 +132,10 @@ class Board {
     return overlaps;
   }
 
-  int get shipsRemaining {
-    return ships
-        .where(
-          (s) => s.points.any((p) => cells.at(p).state == CellState.ship),
-        )
-        .length;
-  }
+  bool isOccupied(Point point) => cells.at(point).state != CellState.none;
+  int get shipsRemaining => ships
+      .where((s) => s.points.any((p) => cells.at(p).state == CellState.ship))
+      .length;
 
   bool get isAllSunk {
     for (var row in cells) {
