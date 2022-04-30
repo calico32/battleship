@@ -163,16 +163,18 @@ class Cell {
     for (int i = 0; i < deltas.length; i++) {
       var delta = deltas[i];
       var point = pos + Point(delta, 0);
-      if (point.outOfBounds) continue;
-      if (cells.at(point).isShip) horizontal++;
+      if (!point.outOfBounds && cells.at(point).isShip) {
+        horizontal++;
+      }
     }
 
     // y
     for (int i = 0; i < deltas.length; i++) {
       var delta = deltas[i];
       var point = pos + Point(0, delta);
-      if (point.outOfBounds) continue;
-      if (cells.at(point).isShip) vertical++;
+      if (!point.outOfBounds && cells.at(point).isShip) {
+        vertical++;
+      }
     }
 
     if (horizontal >= vertical) {
